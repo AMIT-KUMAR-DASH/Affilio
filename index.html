@@ -1,0 +1,765 @@
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #14171C;
+    --surface: #1C2029;
+    --surface-raised: #232833;
+    --border: #2E3440;
+    --ink: #F2EFE9;
+    --muted: #9BA0AB;
+    --gold: #D4AF6A;
+    --gold-soft: rgba(212,175,106,0.14);
+    --gold-border: rgba(212,175,106,0.4);
+    --mint: #4FAE8D;
+    --mint-soft: rgba(79,174,141,0.14);
+    --coral: #E2685A;
+    --coral-soft: rgba(226,104,90,0.14);
+  }
+  [data-theme="light"] {
+    --bg: #F6F4EF;
+    --surface: #FFFFFF;
+    --surface-raised: #FBFAF7;
+    --border: #E4DFD3;
+    --ink: #1D1B16;
+    --muted: #756F63;
+    --gold: #B9863A;
+    --gold-soft: rgba(185,134,58,0.12);
+    --gold-border: rgba(185,134,58,0.4);
+    --mint: #2F8867;
+    --mint-soft: rgba(47,136,103,0.12);
+    --coral: #C5432E;
+    --coral-soft: rgba(197,67,46,0.1);
+  }
+  * { box-sizing: border-box; }
+  #root {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100%;
+    padding: 30px 18px 60px;
+    max-width: 720px;
+    margin: 0 auto;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .brand-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 26px; letter-spacing: -0.01em; margin: 0; }
+  .brand h1 em { color: var(--gold); font-style: italic; }
+  .icon-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; width: 38px; height: 38px; color: var(--ink); font-size: 15px; cursor: pointer; }
+  .icon-btn:hover { border-color: var(--gold-border); }
+  .icon-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .tagline { color: var(--muted); font-size: 13.5px; margin: 0 0 6px; }
+  .tagline em { color: var(--gold); font-style: normal; font-weight: 600; }
+
+  .rate-banner {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    font-size: 12px; padding: 8px 12px; border-radius: 8px; margin-bottom: 16px;
+    background: var(--mint-soft); border: 1px solid var(--mint); color: var(--mint);
+  }
+  .rate-banner.stale { background: var(--coral-soft); border-color: var(--coral); color: var(--coral); }
+  .rate-banner button { background: none; border: none; color: inherit; text-decoration: underline; cursor: pointer; font-size: 12px; font-family: inherit; }
+
+  .onboard { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 22px; }
+  .onboard h3 { font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600; margin: 0 0 12px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
+  .step { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 13.5px; }
+  .step .mark { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+  .step.done .mark { background: var(--mint); border-color: var(--mint); color: var(--bg); }
+  .step.done span.label { color: var(--muted); text-decoration: line-through; }
+  .onboard.complete { display: flex; align-items: center; justify-content: space-between; }
+  .onboard.complete p { margin: 0; font-size: 13.5px; color: var(--mint); }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 20px; }
+  .panel h3 { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .panel .hint { font-size: 12.5px; color: var(--muted); margin: 0 0 14px; }
+  .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+  .field label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .field input, .field select, .field textarea { font-family: 'Inter', sans-serif; font-size: 14px; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--ink); }
+  .field textarea { resize: vertical; min-height: 72px; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; }
+  .field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .row-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+
+  .btn-primary { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; background: var(--gold); color: #1A1305; border: none; border-radius: 8px; padding: 10px 16px; cursor: pointer; }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-ghost { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 6px 11px; cursor: pointer; color: var(--ink); }
+  .btn-ghost:hover { border-color: var(--gold-border); color: var(--gold); }
+  .btn-ghost.active { background: var(--gold-soft); border-color: var(--gold-border); color: var(--gold); }
+
+  .section-head { display: flex; justify-content: space-between; align-items: center; margin: 28px 0 12px; gap: 10px; flex-wrap: wrap; }
+  .section-head h2 { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--gold); margin: 0; }
+  .section-actions { display: flex; gap: 8px; }
+
+  .curr-select-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .curr-select-row label { font-size: 12px; color: var(--muted); }
+  .curr-pills { display: flex; gap: 6px; }
+  .curr-pill { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; font-weight: 600; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; }
+  .curr-pill.active { background: var(--gold); border-color: var(--gold); color: #1A1305; }
+
+  .search-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .search-row input, .search-row select { font-family: 'Inter', sans-serif; font-size: 13px; background: var(--surface); border: 1px solid var(--border); color: var(--ink); border-radius: 8px; padding: 8px 10px; }
+  .search-row input { flex: 1; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+  .card-top { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .cat-chip { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+  .plat-chip { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); }
+  .card-top .name { font-weight: 600; font-size: 14px; flex: 1; }
+  .del-btn { background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; padding: 3px 6px; border-radius: 5px; }
+  .del-btn:hover { color: var(--coral); background: var(--coral-soft); }
+  .card-body { padding: 12px 14px 14px; }
+  .link-row { display: flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; }
+  .link-row .link-text { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+  .caption-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 13px; line-height: 1.55; white-space: pre-wrap; margin-bottom: 10px; }
+  .card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .qr-box { margin-top: 12px; padding: 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-align: center; }
+  .qr-box .qr-render { display: inline-block; background: var(--ink); padding: 8px; border-radius: 6px; }
+  .qr-perf { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--mint); margin-top: 8px; }
+  .warn-inline { font-size: 12px; color: var(--coral); background: var(--coral-soft); border: 1px solid var(--coral); border-radius: 6px; padding: 6px 10px; margin-bottom: 10px; }
+  .empty { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 14px; border: 1px dashed var(--border); border-radius: 12px; }
+
+  .stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 13px; text-align: center; }
+  .stat .n { font-family: 'IBM Plex Mono', monospace; font-size: 17px; font-weight: 600; color: var(--gold); }
+  .stat .l { font-size: 10px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .chart-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 20px; }
+  .chart-panel h3 { font-family: 'Fraunces', serif; font-size: 15px; margin: 0 0 4px; }
+  .chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 90px; margin-top: 16px; }
+  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+  .bar { width: 100%; max-width: 26px; background: linear-gradient(to top, var(--gold), var(--mint)); border-radius: 4px 4px 0 0; }
+  .bar-label { font-size: 9.5px; color: var(--muted); margin-top: 6px; }
+  .top-performer { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border); font-size: 13px; }
+  .top-performer .figs { font-family: 'IBM Plex Mono', monospace; color: var(--gold); font-weight: 600; }
+
+  .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .a-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+  .a-card .a-label { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .a-card .a-val { font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 600; }
+  .a-card .a-val.up { color: var(--mint); }
+  .a-card .a-val.down { color: var(--coral); }
+  .a-card .a-sub { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+  .curr-breakdown { display: flex; flex-direction: column; gap: 6px; }
+  .curr-breakdown .cb-row { display: flex; justify-content: space-between; font-size: 13px; }
+  .curr-breakdown .cb-row .cb-c { color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+
+  table.history-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.history-table th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 8px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  table.history-table td { padding: 9px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  table.history-table tr:last-child td { border-bottom: none; }
+  .table-scroll { overflow-x: auto; }
+  .conv-amt { color: var(--gold); font-family: 'IBM Plex Mono', monospace; }
+  .orig-amt { font-family: 'IBM Plex Mono', monospace; color: var(--muted); }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #1A1305; font-weight: 600; font-size: 13px; padding: 9px 16px; border-radius: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; z-index: 10; }
+  .toast.show { opacity: 1; }
+  .footnote { text-align: center; font-size: 11.5px; color: var(--muted); margin-top: 26px; }
+
+  @media (max-width: 460px) {
+    .row-2, .row-3, .row-4 { grid-template-columns: 1fr; }
+    .stat-strip { grid-template-columns: 1fr 1fr; }
+    .analytics-grid { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div id="root"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LOGO_SVG = `
+<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="2" y="9" width="16" height="16" rx="6" transform="rotate(-20 2 9)" stroke="#D4AF6A" stroke-width="2.4"/>
+  <rect x="10" y="5" width="16" height="16" rx="6" transform="rotate(-20 10 5)" stroke="currentColor" stroke-width="2.4" fill="none"/>
+</svg>`;
+
+const CATEGORIES = { 'Home & Kitchen': '#4FAE8D', 'Beauty': '#E2685A', 'Electronics': '#6C8FC7', 'Fashion': '#A87FC9', 'Fitness': '#D4AF6A', 'Other': '#9BA0AB' };
+const PLATFORMS = { Amazon: { param: 'tag' }, Flipkart: { param: 'affid' }, Other: { param: 'ref' } };
+const CURRENCIES = ['USD', 'INR', 'AED'];
+const CURRENCY_META = {
+  USD: { symbol: '$', label: 'US Dollar' },
+  INR: { symbol: '₹', label: 'Indian Rupee' },
+  AED: { symbol: 'AED', label: 'Dubai Dirham' },
+};
+// Fallback rates (units of currency per 1 USD) used if live fetch fails / offline
+const FALLBACK_RATES = { USD: 1, INR: 85, AED: 3.67 };
+const RATE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+let settings = { tags: { Amazon: '', Flipkart: '', Other: '' }, displayCurrency: 'USD', theme: 'dark' };
+let products = [];
+let logs = [];
+let rateState = { rates: FALLBACK_RATES, fetchedAt: 0, source: 'fallback', error: null };
+let showSettings = false;
+let addMode = null;
+let expandedQR = new Set();
+let searchTerm = '';
+let filterCategory = 'All';
+let sortMode = 'newest';
+let ratesLoading = false;
+
+const root = document.getElementById('root');
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+
+function copyText(text, label) {
+  navigator.clipboard.writeText(text).then(() => toast(`${label} copied`)).catch(() => toast('Could not copy'));
+}
+
+function extractAsin(url) {
+  const patterns = [/\/dp\/([A-Z0-9]{10})/i, /\/gp\/product\/([A-Z0-9]{10})/i, /\/product\/([A-Z0-9]{10})/i, /[?&]asin=([A-Z0-9]{10})/i];
+  for (const p of patterns) { const m = url.match(p); if (m) return m[1].toUpperCase(); }
+  return null;
+}
+
+function buildAffiliateLink(rawUrl, platform) {
+  const tag = settings.tags[platform] || '';
+  if (platform === 'Amazon') {
+    const asin = extractAsin(rawUrl);
+    const domainMatch = rawUrl.match(/https?:\/\/(?:www\.)?(amazon\.[a-z.]+)/i);
+    const domain = domainMatch ? domainMatch[1] : 'amazon.com';
+    if (asin) {
+      const base = `https://www.${domain}/dp/${asin}/`;
+      return tag ? `${base}?tag=${encodeURIComponent(tag)}` : base;
+    }
+  }
+  if (!tag) return rawUrl;
+  const param = PLATFORMS[platform]?.param || 'ref';
+  const sep = rawUrl.includes('?') ? '&' : '?';
+  return `${rawUrl}${sep}${param}=${encodeURIComponent(tag)}`;
+}
+
+function buildCaption(name, link) {
+  return `✨ Just found this and had to share!\n\n${name}\n\n👉 Grab it here: ${link}\n\n#ad #affiliatelink`;
+}
+
+// ---------- Currency conversion ----------
+function convert(amount, fromCurrency, toCurrency) {
+  const rates = rateState.rates || FALLBACK_RATES;
+  const fromRate = rates[fromCurrency] || FALLBACK_RATES[fromCurrency] || 1;
+  const toRate = rates[toCurrency] || FALLBACK_RATES[toCurrency] || 1;
+  const usdAmount = amount / fromRate;
+  return usdAmount * toRate;
+}
+
+function formatCurrency(amount, currency) {
+  if (amount == null || isNaN(amount)) amount = 0;
+  if (currency === 'USD') {
+    return '$' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  if (currency === 'INR') {
+    return '₹' + amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  if (currency === 'AED') {
+    return 'AED ' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  return amount.toFixed(2) + ' ' + currency;
+}
+
+async function loadRates(force) {
+  try {
+    const cached = await window.storage.get('rates_v1', false);
+    if (cached && cached.value) {
+      const parsed = JSON.parse(cached.value);
+      rateState = { ...rateState, ...parsed, error: null };
+    }
+  } catch (e) { /* no cache yet */ }
+
+  const age = Date.now() - (rateState.fetchedAt || 0);
+  if (!force && rateState.fetchedAt && age < RATE_MAX_AGE_MS) return;
+
+  ratesLoading = true;
+  try {
+    const resp = await fetch('https://open.er-api.com/v6/latest/USD');
+    if (!resp.ok) throw new Error('Rate API returned ' + resp.status);
+    const data = await resp.json();
+    if (data.result !== 'success' || !data.rates) throw new Error('Malformed rate response');
+    const rates = { USD: 1 };
+    CURRENCIES.forEach(c => { if (data.rates[c]) rates[c] = data.rates[c]; });
+    rateState = { rates: { ...FALLBACK_RATES, ...rates }, fetchedAt: Date.now(), source: 'live', error: null };
+    await window.storage.set('rates_v1', JSON.stringify(rateState), false);
+  } catch (e) {
+    if (!rateState.rates) rateState.rates = FALLBACK_RATES;
+    rateState.error = e.message || 'Could not reach exchange-rate service';
+    if (rateState.source !== 'live') rateState.source = 'fallback';
+  } finally {
+    ratesLoading = false;
+  }
+}
+
+async function saveSettings() { await window.storage.set('settings_v3', JSON.stringify(settings), false); }
+async function saveProducts() { await window.storage.set('products_v3', JSON.stringify(products), false); }
+async function saveLogs() { await window.storage.set('logs_v3', JSON.stringify(logs), false); }
+
+async function loadData() {
+  try {
+    const s = await window.storage.get('settings_v3', false);
+    settings = s && s.value ? { ...settings, ...JSON.parse(s.value) } : settings;
+  } catch (e) {}
+  try {
+    const p = await window.storage.get('products_v3', false);
+    products = p && p.value ? JSON.parse(p.value) : [];
+  } catch (e) { products = []; }
+  try {
+    const l = await window.storage.get('logs_v3', false);
+    logs = (l && l.value ? JSON.parse(l.value) : []).map(e => ({ currency: 'USD', ...e })); // backfill legacy entries
+  } catch (e) { logs = []; }
+  document.documentElement.setAttribute('data-theme', settings.theme || 'dark');
+  render();
+  await loadRates(false);
+  render();
+}
+
+function hasAnyTag() { return Object.values(settings.tags).some(v => v && v.trim()); }
+
+function logConverted(log) { return convert(log.originalAmount, log.currency, settings.displayCurrency); }
+
+function productEarningsConverted(productId) {
+  return logs.filter(l => l.productId === productId).reduce((s, l) => s + logConverted(l), 0);
+}
+
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+function monthStr(d) { return (d || todayStr()).slice(0, 7); }
+function prevMonthStr() {
+  const d = new Date();
+  d.setMonth(d.getMonth() - 1);
+  return d.toISOString().slice(0, 7);
+}
+
+function exportCSV() {
+  let rows = [['Type','Name','Category','Platform','Link','Date','Network','OriginalAmount','OriginalCurrency','ConvertedAmount','DisplayCurrency','Clicks','Orders']];
+  products.forEach(p => rows.push(['Product', p.name, p.category, p.platform, p.link, '', '', '', '', '', '', '', '']));
+  logs.forEach(l => rows.push(['Log', l.productName, '', '', '', l.date, l.network || l.productName, l.originalAmount, l.currency, logConverted(l).toFixed(2), settings.displayCurrency, l.clicks, l.orders]));
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'affilio-export.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exported');
+}
+
+function render() {
+  const disp = settings.displayCurrency;
+  const today = todayStr();
+  const thisMonth = monthStr();
+  const lastMonth = prevMonthStr();
+
+  const todayEarnings = logs.filter(l => l.date === today).reduce((s, l) => s + logConverted(l), 0);
+  const monthEarnings = logs.filter(l => monthStr(l.date) === thisMonth).reduce((s, l) => s + logConverted(l), 0);
+  const lifetimeEarnings = logs.reduce((s, l) => s + logConverted(l), 0);
+  const lastMonthEarnings = logs.filter(l => monthStr(l.date) === lastMonth).reduce((s, l) => s + logConverted(l), 0);
+
+  const byNetwork = {};
+  logs.forEach(l => {
+    const key = l.network || 'Other';
+    byNetwork[key] = (byNetwork[key] || 0) + logConverted(l);
+  });
+  const networkEntries = Object.entries(byNetwork).sort((a, b) => b[1] - a[1]);
+  const bestNetwork = networkEntries[0];
+
+  const byCurrency = {};
+  logs.forEach(l => { byCurrency[l.currency] = (byCurrency[l.currency] || 0) + l.originalAmount; });
+
+  const growthPct = lastMonthEarnings > 0 ? ((monthEarnings - lastMonthEarnings) / lastMonthEarnings) * 100 : (monthEarnings > 0 ? 100 : 0);
+
+  const onboardSteps = [
+    { done: hasAnyTag(), label: 'Add your affiliate tracking ID' },
+    { done: products.length > 0, label: 'Create your first affiliate link' },
+    { done: logs.length > 0, label: 'Log your first click/earning' },
+  ];
+  const onboardComplete = onboardSteps.every(s => s.done);
+
+  let visibleProducts = products.filter(p => (filterCategory === 'All' || p.category === filterCategory) && p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  if (sortMode === 'newest') visibleProducts.sort((a,b) => b.createdAt - a.createdAt);
+  if (sortMode === 'earnings') visibleProducts.sort((a,b) => productEarningsConverted(b.id) - productEarningsConverted(a.id));
+
+  const topProduct = products.slice().sort((a,b) => productEarningsConverted(b.id) - productEarningsConverted(a.id))[0];
+  const recentLogs = logs.slice(-8);
+  const maxCommission = Math.max(1, ...recentLogs.map(l => logConverted(l)));
+
+  const rateAgeHrs = rateState.fetchedAt ? Math.round((Date.now() - rateState.fetchedAt) / 3600000) : null;
+  const rateStale = rateState.source !== 'live' || rateState.error;
+
+  root.innerHTML = `
+    <div class="brand-row">
+      <div class="brand">${LOGO_SVG}<h1>Affil<em>io</em></h1></div>
+      <div style="display:flex;gap:8px;">
+        <button class="icon-btn" id="toggle-theme" title="Toggle theme" aria-label="Toggle theme">${settings.theme === 'light' ? '🌙' : '☀️'}</button>
+        <button class="icon-btn" id="export-csv" title="Export CSV" aria-label="Export CSV">⬇</button>
+        <button class="icon-btn" id="toggle-settings" aria-label="Settings">⚙</button>
+      </div>
+    </div>
+    <p class="tagline">Track. Share. <em>Earn.</em></p>
+
+    <div class="rate-banner ${rateStale ? 'stale' : ''}">
+      <span>${ratesLoading ? 'Updating exchange rates…' : rateState.error ? `Live rates unavailable — using ${rateState.source === 'live' ? 'last cached' : 'offline fallback'} rates${rateAgeHrs != null ? ` (${rateAgeHrs}h old)` : ''}.` : `Rates updated ${rateAgeHrs === 0 ? 'less than an hour ago' : rateAgeHrs + 'h ago'} · 1 USD = ${(rateState.rates.INR||FALLBACK_RATES.INR).toFixed(2)} INR = ${(rateState.rates.AED||FALLBACK_RATES.AED).toFixed(2)} AED`}</span>
+      <button id="refresh-rates">Refresh</button>
+    </div>
+
+    ${onboardComplete ? `
+      <div class="onboard complete"><p>✓ You're fully set up</p><span style="color:var(--muted);font-size:12px;">Keep creating links →</span></div>
+    ` : `
+      <div class="onboard">
+        <h3>Getting started</h3>
+        ${onboardSteps.map(s => `<div class="step ${s.done ? 'done' : ''}"><span class="mark">${s.done ? '✓' : ''}</span><span class="label">${s.label}</span></div>`).join('')}
+      </div>
+    `}
+
+    ${showSettings ? renderSettings() : ''}
+
+    <div class="section-head"><h2>Dashboard</h2></div>
+    <div class="curr-select-row">
+      <label>Display currency</label>
+      <div class="curr-pills">
+        ${CURRENCIES.map(c => `<button class="curr-pill ${c === disp ? 'active' : ''}" data-curr="${c}">${CURRENCY_META[c].symbol} ${c}</button>`).join('')}
+      </div>
+    </div>
+    <div class="stat-strip">
+      <div class="stat"><div class="n">${formatCurrency(todayEarnings, disp)}</div><div class="l">Today</div></div>
+      <div class="stat"><div class="n">${formatCurrency(monthEarnings, disp)}</div><div class="l">This month</div></div>
+      <div class="stat"><div class="n">${formatCurrency(lifetimeEarnings, disp)}</div><div class="l">Lifetime</div></div>
+      <div class="stat"><div class="n">${networkEntries.length}</div><div class="l">Networks</div></div>
+    </div>
+
+    <div class="analytics-grid">
+      <div class="a-card">
+        <div class="a-label">Best-performing network</div>
+        <div class="a-val">${bestNetwork ? escapeHTML(bestNetwork[0]) : '—'}</div>
+        <div class="a-sub">${bestNetwork ? formatCurrency(bestNetwork[1], disp) + ' lifetime' : 'No earnings logged yet'}</div>
+      </div>
+      <div class="a-card">
+        <div class="a-label">Monthly growth</div>
+        <div class="a-val ${growthPct >= 0 ? 'up' : 'down'}">${growthPct >= 0 ? '▲' : '▼'} ${Math.abs(growthPct).toFixed(1)}%</div>
+        <div class="a-sub">vs. ${formatCurrency(lastMonthEarnings, disp)} last month</div>
+      </div>
+      <div class="a-card" style="grid-column:1/-1;">
+        <div class="a-label">Total earnings by original currency</div>
+        <div class="curr-breakdown">
+          ${CURRENCIES.map(c => `<div class="cb-row"><span>${CURRENCY_META[c].label}</span><span class="cb-c">${formatCurrency(byCurrency[c] || 0, c)}</span></div>`).join('')}
+        </div>
+      </div>
+      ${networkEntries.length ? `
+      <div class="a-card" style="grid-column:1/-1;">
+        <div class="a-label">Earnings by network (in ${disp})</div>
+        <div class="curr-breakdown">
+          ${networkEntries.map(([n, v]) => `<div class="cb-row"><span>${escapeHTML(n)}</span><span class="cb-c">${formatCurrency(v, disp)}</span></div>`).join('')}
+        </div>
+      </div>` : ''}
+    </div>
+
+    ${logs.length > 0 ? `
+      <div class="chart-panel">
+        <h3>Recent commission</h3>
+        <p class="hint" style="color:var(--muted);font-size:12px;margin:2px 0 0;">Last ${recentLogs.length} logged entries, converted to ${disp}</p>
+        <div class="chart-bars">
+          ${recentLogs.map(l => `<div class="bar-wrap"><div class="bar" style="height:${Math.max(6,(logConverted(l)/maxCommission)*100)}%" title="${formatCurrency(logConverted(l), disp)} on ${l.date}"></div><div class="bar-label">${l.date.slice(5)}</div></div>`).join('')}
+        </div>
+        ${topProduct ? `<div class="top-performer"><span>🏆 Top link: <strong>${escapeHTML(topProduct.name)}</strong></span><span class="figs">${formatCurrency(productEarningsConverted(topProduct.id), disp)}</span></div>` : ''}
+      </div>
+    ` : ''}
+
+    <div class="section-head">
+      <h2>Your links</h2>
+      <div class="section-actions">
+        <button class="btn-ghost" id="mode-single">${addMode === 'single' ? 'Close' : '+ New link'}</button>
+        <button class="btn-ghost" id="mode-bulk">${addMode === 'bulk' ? 'Close' : '+ Bulk add'}</button>
+      </div>
+    </div>
+
+    ${addMode === 'single' ? renderAddForm() : ''}
+    ${addMode === 'bulk' ? renderBulkForm() : ''}
+
+    ${products.length > 0 ? `
+      <div class="search-row">
+        <input id="search-input" type="text" placeholder="Search your links…" value="${escapeHTML(searchTerm)}" />
+        <select id="filter-cat">
+          <option value="All" ${filterCategory==='All'?'selected':''}>All categories</option>
+          ${Object.keys(CATEGORIES).map(c => `<option value="${c}" ${filterCategory===c?'selected':''}>${c}</option>`).join('')}
+        </select>
+        <select id="sort-mode">
+          <option value="newest" ${sortMode==='newest'?'selected':''}>Newest</option>
+          <option value="earnings" ${sortMode==='earnings'?'selected':''}>Top earning</option>
+        </select>
+      </div>
+    ` : ''}
+
+    ${products.length === 0 && !addMode ? `<div class="empty">No links yet. Paste an Amazon (or other) product URL to create your first affiliate link and caption.</div>` :
+      visibleProducts.length === 0 && products.length > 0 ? `<div class="empty">No links match that search or filter.</div>` :
+      visibleProducts.map(cardHTML).join('')}
+
+    <div class="section-head"><h2>Log today's numbers</h2></div>
+    <div class="panel">
+      <p class="hint">Copy these from your affiliate dashboard — this app can't pull them automatically. Enter the amount exactly as paid out by the network, in its original currency.</p>
+      <div class="row-2">
+        <div class="field" style="grid-column:1/-1;"><label for="log-product">Product / link</label>
+          <select id="log-product">${products.length === 0 ? '<option value="">Add a link first</option>' : products.map(p => `<option value="${p.id}">${escapeHTML(p.name)} (${p.platform})</option>`).join('')}</select>
+        </div>
+        <div class="field"><label for="log-clicks">Clicks</label><input id="log-clicks" type="number" min="0" placeholder="0" /></div>
+        <div class="field"><label for="log-orders">Orders</label><input id="log-orders" type="number" min="0" placeholder="0" /></div>
+        <div class="field"><label for="log-amount">Commission amount</label><input id="log-amount" type="number" min="0" step="0.01" placeholder="0.00" /></div>
+        <div class="field"><label for="log-currency">Currency received</label>
+          <select id="log-currency">${CURRENCIES.map(c => `<option value="${c}" ${c===disp?'selected':''}>${CURRENCY_META[c].symbol} ${c}</option>`).join('')}</select>
+        </div>
+      </div>
+      <button class="btn-primary" id="save-log" ${products.length === 0 ? 'disabled' : ''}>Add entry</button>
+    </div>
+
+    <div class="section-head"><h2>Earnings history</h2></div>
+    ${logs.length ? `
+      <div class="panel">
+        <div class="table-scroll">
+          <table class="history-table">
+            <thead><tr><th>Date</th><th>Network</th><th>Original</th><th>Converted (${disp})</th><th>Clicks</th><th>Orders</th></tr></thead>
+            <tbody>
+              ${logs.slice().reverse().slice(0, 25).map(l => `
+                <tr>
+                  <td>${l.date}</td>
+                  <td>${escapeHTML(l.network || l.productName)}</td>
+                  <td class="orig-amt">${formatCurrency(l.originalAmount, l.currency)}</td>
+                  <td class="conv-amt">${formatCurrency(logConverted(l), disp)}</td>
+                  <td>${l.clicks}</td>
+                  <td>${l.orders}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    ` : `<div class="empty">No earnings logged yet.</div>`}
+
+    <p class="footnote">All data stays private to your account. Amounts are stored in their original currency; conversions shown are estimates based on the latest available exchange rate. Every post needs a visible #ad disclosure.</p>
+  `;
+
+  document.getElementById('toggle-settings').addEventListener('click', () => { showSettings = !showSettings; render(); });
+  document.getElementById('toggle-theme').addEventListener('click', () => {
+    settings.theme = settings.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', settings.theme);
+    saveSettings(); render();
+  });
+  document.getElementById('export-csv').addEventListener('click', exportCSV);
+  document.getElementById('mode-single').addEventListener('click', () => { addMode = addMode === 'single' ? null : 'single'; render(); });
+  document.getElementById('mode-bulk').addEventListener('click', () => { addMode = addMode === 'bulk' ? null : 'bulk'; render(); });
+  document.getElementById('refresh-rates').addEventListener('click', async () => { ratesLoading = true; render(); await loadRates(true); render(); toast(rateState.error ? 'Could not refresh rates' : 'Rates refreshed'); });
+
+  document.querySelectorAll('.curr-pill').forEach(btn => btn.addEventListener('click', () => {
+    settings.displayCurrency = btn.dataset.curr; saveSettings(); render();
+  }));
+
+  if (showSettings) attachSettingsHandlers();
+  if (addMode === 'single') attachAddFormHandlers();
+  if (addMode === 'bulk') attachBulkFormHandlers();
+
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) searchInput.addEventListener('input', (e) => { searchTerm = e.target.value; render(); document.getElementById('search-input')?.focus(); });
+  const filterSel = document.getElementById('filter-cat');
+  if (filterSel) filterSel.addEventListener('change', (e) => { filterCategory = e.target.value; render(); });
+  const sortSel = document.getElementById('sort-mode');
+  if (sortSel) sortSel.addEventListener('change', (e) => { sortMode = e.target.value; render(); });
+
+  document.querySelectorAll('.copy-link').forEach(btn => btn.addEventListener('click', () => copyText(btn.dataset.link, 'Link')));
+  document.querySelectorAll('.copy-caption').forEach(btn => btn.addEventListener('click', () => copyText(btn.dataset.caption, 'Caption')));
+  document.querySelectorAll('.del-product').forEach(btn => btn.addEventListener('click', () => {
+    if (!confirm('Remove this link? Logged earnings for it will stay in history.')) return;
+    products = products.filter(p => p.id !== btn.dataset.id);
+    saveProducts(); render();
+  }));
+  document.querySelectorAll('.toggle-qr').forEach(btn => btn.addEventListener('click', () => {
+    const id = btn.dataset.id;
+    if (expandedQR.has(id)) expandedQR.delete(id); else expandedQR.add(id);
+    render();
+  }));
+  document.querySelectorAll('.download-qr').forEach(btn => btn.addEventListener('click', () => {
+    const container = document.getElementById('qr-' + btn.dataset.id);
+    const canvas = container?.querySelector('canvas');
+    if (!canvas) return;
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = 'affiliate-qr.png';
+    a.click();
+  }));
+
+  const saveLogBtn = document.getElementById('save-log');
+  if (saveLogBtn) {
+    saveLogBtn.addEventListener('click', () => {
+      const pid = document.getElementById('log-product').value;
+      const prod = products.find(p => p.id === pid);
+      if (!prod) return;
+      const clicks = parseInt(document.getElementById('log-clicks').value) || 0;
+      const orders = parseInt(document.getElementById('log-orders').value) || 0;
+      const originalAmount = parseFloat(document.getElementById('log-amount').value) || 0;
+      const currency = document.getElementById('log-currency').value;
+      logs.push({
+        id: 'log_' + Date.now(),
+        productId: prod.id,
+        productName: prod.name,
+        network: prod.platform,
+        clicks, orders,
+        originalAmount, currency,
+        date: new Date().toISOString().slice(0,10),
+      });
+      saveLogs(); render();
+      toast('Entry added');
+    });
+  }
+
+  generateQRCodes();
+}
+
+function generateQRCodes() {
+  expandedQR.forEach(id => {
+    const container = document.getElementById('qr-' + id);
+    const product = products.find(p => p.id === id);
+    if (!container || !product) return;
+    container.innerHTML = '';
+    try { new QRCode(container, { text: product.link, width: 96, height: 96, colorDark: '#14171C', colorLight: '#F2EFE9' }); } catch (e) {}
+  });
+}
+
+function renderSettings() {
+  return `
+    <div class="panel">
+      <h3>Affiliate tracking IDs</h3>
+      <p class="hint">Add the tag/ID for each program you're part of. Links you create use these automatically.</p>
+      ${Object.keys(PLATFORMS).map(pl => `
+        <div class="field"><label for="tag-${pl}">${pl} ${pl === 'Amazon' ? '(e.g. yourname-21)' : ''}</label>
+        <input id="tag-${pl}" type="text" placeholder="Not set" value="${escapeHTML(settings.tags[pl] || '')}" /></div>
+      `).join('')}
+      <button class="btn-primary" id="save-tags">Save</button>
+    </div>
+  `;
+}
+
+function attachSettingsHandlers() {
+  document.getElementById('save-tags').addEventListener('click', () => {
+    Object.keys(PLATFORMS).forEach(pl => { settings.tags[pl] = document.getElementById('tag-' + pl).value.trim(); });
+    saveSettings();
+    products.forEach(p => { p.link = buildAffiliateLink(p.rawUrl, p.platform); p.caption = buildCaption(p.name, p.link); });
+    saveProducts();
+    showSettings = false;
+    render();
+    toast('Tracking IDs saved');
+  });
+}
+
+function renderAddForm() {
+  return `
+    <div class="panel">
+      <h3>Paste a product link</h3>
+      <div class="field"><label for="new-url">Product URL</label><input id="new-url" type="text" placeholder="https://www.amazon.com/dp/..." /></div>
+      <div class="row-3">
+        <div class="field"><label for="new-name">Product name</label><input id="new-name" type="text" placeholder="e.g. Wireless Earbuds" /></div>
+        <div class="field"><label for="new-cat">Category</label><select id="new-cat">${Object.keys(CATEGORIES).map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
+        <div class="field"><label for="new-platform">Platform</label><select id="new-platform">${Object.keys(PLATFORMS).map(p => `<option value="${p}">${p}</option>`).join('')}</select></div>
+      </div>
+      <button class="btn-primary" id="create-link">Create affiliate link</button>
+    </div>
+  `;
+}
+
+function attachAddFormHandlers() {
+  document.getElementById('create-link').addEventListener('click', () => {
+    const rawUrl = document.getElementById('new-url').value.trim();
+    const name = document.getElementById('new-name').value.trim();
+    const category = document.getElementById('new-cat').value;
+    const platform = document.getElementById('new-platform').value;
+    if (!rawUrl || !name) { alert('Add a product URL and a name.'); return; }
+    const link = buildAffiliateLink(rawUrl, platform);
+    const caption = buildCaption(name, link);
+    products.push({ id: 'prod_' + Date.now(), rawUrl, name, category, platform, link, caption, createdAt: Date.now() });
+    saveProducts();
+    addMode = null;
+    render();
+    toast('Link created');
+  });
+}
+
+function renderBulkForm() {
+  return `
+    <div class="panel">
+      <h3>Bulk add links</h3>
+      <p class="hint">One per line, format: <em>url, product name</em>. Same category and platform applied to all.</p>
+      <div class="field"><label for="bulk-text">Links</label>
+        <textarea id="bulk-text" placeholder="https://www.amazon.com/dp/XXXXXXXXXX, Wireless Earbuds
+https://www.amazon.com/dp/YYYYYYYYYY, Yoga Mat"></textarea>
+      </div>
+      <div class="row-2">
+        <div class="field"><label for="bulk-cat">Category</label><select id="bulk-cat">${Object.keys(CATEGORIES).map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>
+        <div class="field"><label for="bulk-platform">Platform</label><select id="bulk-platform">${Object.keys(PLATFORMS).map(p => `<option value="${p}">${p}</option>`).join('')}</select></div>
+      </div>
+      <button class="btn-primary" id="create-bulk">Create links</button>
+    </div>
+  `;
+}
+
+function attachBulkFormHandlers() {
+  document.getElementById('create-bulk').addEventListener('click', () => {
+    const text = document.getElementById('bulk-text').value.trim();
+    const category = document.getElementById('bulk-cat').value;
+    const platform = document.getElementById('bulk-platform').value;
+    if (!text) { alert('Paste at least one line.'); return; }
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    let count = 0;
+    lines.forEach(line => {
+      const [rawUrl, ...nameParts] = line.split(',');
+      const name = nameParts.join(',').trim() || 'Untitled product';
+      if (!rawUrl || !rawUrl.trim()) return;
+      const link = buildAffiliateLink(rawUrl.trim(), platform);
+      const caption = buildCaption(name, link);
+      products.push({ id: 'prod_' + Date.now() + '_' + count, rawUrl: rawUrl.trim(), name, category, platform, link, caption, createdAt: Date.now() });
+      count++;
+    });
+    saveProducts();
+    addMode = null;
+    render();
+    toast(`${count} links created`);
+  });
+}
+
+function cardHTML(p) {
+  const color = CATEGORIES[p.category] || CATEGORIES.Other;
+  const earned = productEarningsConverted(p.id);
+  return `
+    <div class="card">
+      <div class="card-top">
+        <span class="cat-chip" style="background:${color}26;color:${color};border:1px solid ${color}55">${p.category}</span>
+        <span class="plat-chip">${p.platform}</span>
+        <span class="name">${escapeHTML(p.name)}</span>
+        <button class="del-btn del-product" data-id="${p.id}" aria-label="Remove ${escapeHTML(p.name)}">✕</button>
+      </div>
+      <div class="card-body">
+        ${!settings.tags[p.platform] ? `<div class="warn-inline">No ${p.platform} tag set — add one in ⚙ Settings so this link actually earns you commission.</div>` : ''}
+        <div class="link-row"><span class="link-text">${escapeHTML(p.link)}</span><button class="btn-ghost copy-link" data-link="${escapeHTML(p.link)}">Copy link</button></div>
+        <div class="caption-box">${escapeHTML(p.caption)}</div>
+        <div class="card-actions">
+          <button class="btn-ghost copy-caption" data-caption="${escapeHTML(p.caption)}">Copy caption</button>
+          <button class="btn-ghost toggle-qr" data-id="${p.id}">${expandedQR.has(p.id) ? 'Hide QR' : 'Show QR'}</button>
+        </div>
+        ${expandedQR.has(p.id) ? `
+          <div class="qr-box">
+            <div class="qr-render" id="qr-${p.id}"></div>
+            <div><button class="btn-ghost download-qr" data-id="${p.id}" style="margin-top:10px;">Download QR</button></div>
+            ${earned > 0 ? `<div class="qr-perf">Earned so far: ${formatCurrency(earned, settings.displayCurrency)}</div>` : ''}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+loadData();
+</script>
