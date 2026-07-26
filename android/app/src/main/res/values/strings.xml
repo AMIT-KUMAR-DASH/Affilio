@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Affilio</string>
+    <string name="title_activity_main">Affilio</string>
+    <string name="package_name">com.affilio.app</string>
+    <string name="custom_url_scheme">com.affilio.app</string>
+</resources>
