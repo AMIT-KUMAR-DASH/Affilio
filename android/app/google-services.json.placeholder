@@ -1,0 +1,12 @@
+Replace this file with your real google-services.json.
+
+Get it from: Firebase Console → Project settings → Your apps → Android app
+(package name: com.affilio.app) → "google-services.json" download button.
+
+Rename it to exactly: google-services.json
+and place it at: android/app/google-services.json
+
+Do NOT commit your real google-services.json to a public repository if the
+project contains sensitive API restrictions — for most consumer apps it's
+safe to ship (it does not contain secrets), but confirm your own API key
+restrictions in Google Cloud Console regardless.
