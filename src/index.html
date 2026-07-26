@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<title>Affilio — Track. Share. Earn.</title>
+<meta name="description" content="Affilio helps affiliate marketers create tracked links, generate share-ready captions, and log commissions across networks and currencies." />
+<meta name="theme-color" content="#14171C" />
+
+<!-- PWA manifest -->
+<link rel="manifest" href="./manifest.json" />
+
+<!-- Icons -->
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/styles.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+  <!-- Splash screen: shown for ~2s on cold start, also used as the Capacitor Android launch screen source -->
+  <div class="splash-screen" id="splash">
+    <img class="mark" src="./icons/icon-192.png" alt="Affilio" />
+    <h1>Affil<em>io</em></h1>
+  </div>
+
+  <div id="login-gate" style="display:none;"></div>
+
+  <div id="app-shell" style="display:none;">
+    <div id="root"></div>
+    <div class="toast" id="toast"></div>
+    <div class="install-banner" id="install-banner">
+      <p>Install Affilio for quick access and offline use.</p>
+      <button class="btn-primary" id="install-btn">Install</button>
+      <button class="icon-btn" id="dismiss-install" aria-label="Dismiss" style="width:32px;height:32px;">✕</button>
+    </div>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+  <script type="module" src="./js/pwa-install.js"></script>
+  <script>
+    // Hide splash after a minimum 2s so the brand mark is always seen,
+    // even if auth/data resolve faster than that.
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splash');
+        if (splash) { splash.classList.add('hide'); setTimeout(() => splash.remove(), 450); }
+      }, 2000);
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(err => console.warn('SW registration failed', err));
+      });
+    }
+  </script>
+</body>
+</html>
